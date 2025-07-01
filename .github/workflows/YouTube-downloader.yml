@@ -1,0 +1,31 @@
+name: Download YouTube Video
+
+on:
+  push:
+    paths:
+      - URL.txt
+
+jobs:
+  download-video:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install yt-dlp
+        run:  python -m pip install --upgrade git+https://github.com/yt-dlp/yt-dlp.git@release
+
+      - name: Download video
+        run: |
+          url=$(cat URL.txt)
+          yt-dlp -f bestvideo+bestaudio --merge-output-format mp4 "$url" -o "videos/%(title)s.%(ext)s"
+
+      - name: Commit & push downloaded video
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add videos/
+          git commit -m "Add downloaded video"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
