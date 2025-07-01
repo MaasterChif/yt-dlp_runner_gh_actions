@@ -13,12 +13,16 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install yt-dlp
-        run:  python -m pip install --upgrade git+https://github.com/yt-dlp/yt-dlp.git@release
+        run: python -m pip install --upgrade git+https://github.com/yt-dlp/yt-dlp.git@release
+
+      - name: Restore cookies.txt from secret
+        run: |
+          echo "${{ secrets.YT_COOKIES_B64 }}" | base64 -d > cookies.txt
 
       - name: Download video
         run: |
           url=$(cat URL.txt)
-          yt-dlp -f bestvideo+bestaudio --merge-output-format mp4 "$url" -o "videos/%(title)s.%(ext)s"
+          yt-dlp --cookies cookies.txt -f "bestvideo+bestaudio/best" --merge-output-format mp4 "$url" -o "videos/%(title)s.%(ext)s"
 
       - name: Commit & push downloaded video
         run: |
