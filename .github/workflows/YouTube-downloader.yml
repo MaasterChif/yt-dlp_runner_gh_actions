@@ -62,6 +62,7 @@ jobs:
           await page.getByRole('textbox', { name: 'Email or phone' }).fill(EMAIL);
           await page.getByRole('button', { name: /^Next$/ }).click();
           await page.waitForTimeout(2000);
+          await page.screenshot({ path: 'before-username.png' });
           await page.getByRole('textbox', { name: 'Username' }).fill(EMAIL);
           await page.getByRole('button', { name: /^Next$/ }).click();
           await page.getByRole('textbox', { name: 'Password' }).fill(PASSWORD);
