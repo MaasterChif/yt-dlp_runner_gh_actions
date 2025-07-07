@@ -2,6 +2,8 @@ name: Download YouTube Video with Login
 
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types: [yt-download-request]
 
 jobs:
   download:
@@ -32,6 +34,12 @@ jobs:
         sudo apt install -y python3-pip
         pip install playwright python-dotenv
 
+    - name: Prepare URL list
+      run: |
+        if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+          echo "${{ github.event.client_payload.url }}" > URL.txt
+        fi
+
     - name: Run Playwright login and export cookies
       env:
         LOGIN_EMAIL: ${{ secrets.LOGIN_EMAIL }}
@@ -50,17 +58,15 @@ jobs:
           const page = await context.newPage();
 
           await page.goto('https://www.youtube.com/');
-
-          // Start login flow
           await page.getByRole('link', { name: 'Sign in' }).click();
-          await page.getByRole('textbox', {name: 'Email or phone'}).fill(EMAIL);
+          await page.getByRole('textbox', { name: 'Email or phone' }).fill(EMAIL);
           await page.getByRole('button', { name: /^Next$/ }).click();
           await page.waitForTimeout(2000);
-          await page.getByRole('textbox', {name: 'Username'}).fill(EMAIL);
+          await page.getByRole('textbox', { name: 'Username' }).fill(EMAIL);
           await page.getByRole('button', { name: /^Next$/ }).click();
-          await page.getByRole('textbox', {name:'Password'}).fill(PASSWORD);
+          await page.getByRole('textbox', { name: 'Password' }).fill(PASSWORD);
           await page.getByRole('button', { name: /^Verify$/ }).click();
-          
+
           await page.waitForURL('https://www.youtube.com/*');
 
           const cookies = await context.cookies();
@@ -86,12 +92,14 @@ jobs:
     - name: Create output folder
       run: mkdir -p videos
 
-    - name: Download YouTube video with yt-dlp
+    - name: Download YouTube video(s) with yt-dlp
       run: |
-        yt-dlp --cookies cookies.txt -f "bestvideo+bestaudio/best" --merge-output-format mp4 \
-        "https://www.youtube.com/watch?v=zFZ5jQ0yuNA" -o "videos/%(title)s.%(ext)s"
+        while IFS= read -r url; do
+          yt-dlp --cookies cookies.txt -f "bestvideo+bestaudio/best" --merge-output-format mp4 \
+            "$url" -o "videos/%(title)s.%(ext)s"
+        done < URL.txt
 
-    - name: Upload downloaded video as artifact
+    - name: Upload downloaded video(s) as artifact
       uses: actions/upload-artifact@v4
       with:
         name: downloaded-video
