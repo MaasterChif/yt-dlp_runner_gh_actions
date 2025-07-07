@@ -105,10 +105,3 @@ jobs:
       with:
         name: downloaded-video
         path: videos/
-    - name: Upload Playwright debug screenshot
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: login-screenshot
-        path: before-username.png
-
