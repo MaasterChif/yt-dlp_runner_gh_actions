@@ -89,7 +89,7 @@ jobs:
         "https://www.youtube.com/watch?v=zFZ5jQ0yuNA" -o "videos/%(title)s.%(ext)s"
 
     - name: Upload downloaded video as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: downloaded-video
         path: videos/
