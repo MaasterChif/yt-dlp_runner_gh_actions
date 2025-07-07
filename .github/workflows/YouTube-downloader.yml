@@ -76,7 +76,7 @@ jobs:
             'TRUE',
             c.path,
             c.secure ? 'TRUE' : 'FALSE',
-            Math.floor(c.expires || 0),
+            (c.expires && c.expires > Date.now() / 1000 ? Math.floor(c.expires) : Math.floor(Date.now() / 1000 + 3600)),
             c.name,
             c.value
           ].join('\t')).join('\n');
