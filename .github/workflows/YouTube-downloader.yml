@@ -49,16 +49,19 @@ jobs:
           const context = await browser.newContext();
           const page = await context.newPage();
 
-          await page.goto('https://www.youtube.com');
+          await page.goto('https://www.youtube.com/');
 
           // Start login flow
           await page.getByRole('link', { name: 'Sign in' }).click();
-          await page.getByLabel('Email or phone').fill(EMAIL);
+          await page.getByRole('textbox', {name: 'Email or phone'}).fill(EMAIL);
           await page.getByRole('button', { name: /^Next$/ }).click();
           await page.waitForTimeout(2000);
-          await page.getByLabel('Enter your password').fill(PASSWORD);
+          await page.getByRole('textbox', {name: 'Username'}).fill(EMAIL);
           await page.getByRole('button', { name: /^Next$/ }).click();
-          await page.waitForNavigation({ timeout: 15000 });
+          await page.getByRole('textbox', {name:'Password'}).fill(PASSWORD);
+          await page.getByRole('button', { name: /^Verify$/ }).click();
+          
+          await page.waitForURL('https://www.youtube.com/*');
 
           const cookies = await context.cookies();
           const netscape = cookies.map(c => [
