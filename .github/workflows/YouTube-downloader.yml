@@ -100,7 +100,6 @@ jobs:
       run: |
         yt-dlp --cookies cookies.txt -f "bestvideo+bestaudio/best" --merge-output-format mp4 \
           -a URL.txt -o "%(playlist_index)s - %(title)s.%(ext)s"
-        done < URL.txt
 
     - name: Upload downloaded video(s) as artifact
       uses: actions/upload-artifact@v4
