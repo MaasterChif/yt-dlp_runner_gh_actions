@@ -95,9 +95,8 @@ jobs:
 
     - name: Download YouTube video(s) with yt-dlp
       run: |
-        while IFS= read -r url; do
-          yt-dlp --cookies cookies.txt -f "bestvideo+bestaudio/best" --merge-output-format mp4 \
-            "$url" -o "videos/%(title)s.%(ext)s"
+        yt-dlp --cookies cookies.txt -f "bestvideo+bestaudio/best" --merge-output-format mp4 \
+          -a URL.txt -o "%(playlist_index)s - %(title)s.%(ext)s"
         done < URL.txt
 
     - name: Upload downloaded video(s) as artifact
