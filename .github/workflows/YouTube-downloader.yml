@@ -1,6 +1,9 @@
 name: Download YouTube Video with Login
 
 on:
+  push:
+    paths:
+      - 'URL.txt'
   workflow_dispatch:
   repository_dispatch:
     types: [yt-download-request]
